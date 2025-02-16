@@ -1,11 +1,13 @@
 package com.exam.ort.entity;
 
+import com.exam.ort.enums.QuestionType;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.FieldDefaults;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -19,15 +21,23 @@ public class Question {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column
+    @Column(nullable = false)
     String text;
 
-    @OneToMany
+    @OneToMany(mappedBy = "question")
     List<Answer> answers;
 
-    @Column
+    @Column(nullable = false)
     double score;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "section_id")
     Section section;
+
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    QuestionType questionType;
+
+    @Column
+    LocalDateTime createdAt;
 }

@@ -12,4 +12,6 @@ public interface AnswerService {
     void deleteById(long id);
 
     List<AnswerRecord> findAnswersByQuestionId(long questionId);
+
+    List<AnswerRecord> findAllByQuestionId(Long questionId);
 }

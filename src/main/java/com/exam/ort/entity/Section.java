@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.FieldDefaults;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -23,11 +24,14 @@ public class Section {
     String name;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    Exam mainExam;
+    Exam exam;
 
     @Column(nullable = false)
     int questionsCount;
 
     @OneToMany
     List<Question> questions;
+
+    @Column
+    LocalDateTime created;
 }

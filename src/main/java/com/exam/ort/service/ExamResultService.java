@@ -10,4 +10,6 @@ public interface ExamResultService {
     ExamResultRecord findById(Long id);
     List<ExamResultRecord> findAll();
     void deleteById(Long id);
+
+    List<ExamResultRecord> findAllByExamIdAndUserId(Long examId, Long userId);
 }

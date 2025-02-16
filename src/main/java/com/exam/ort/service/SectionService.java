@@ -8,6 +8,7 @@ public interface SectionService {
 
     SectionRecord save(SectionRecord sectionRecord);
     SectionRecord findById(long id);
-    List<SectionRecord> findAll();
+    List<SectionRecord> findAllByExamId(long examId);
+    List<SectionRecord> findAllByExamId();
     void deleteById(long id);
 }

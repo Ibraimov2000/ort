@@ -1,2 +1,5 @@
-package com.exam.ort.service;public interface ReminderService {
+package com.exam.ort.service;
+
+public interface ReminderService {
+    void sendDailyReminders();
 }

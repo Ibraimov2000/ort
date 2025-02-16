@@ -24,19 +24,19 @@ public class Exam {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
 
-    @Column(unique = true, nullable = false)
+    @Column(nullable = false)
     String name;
 
-    @Column(unique = true, nullable = false)
+    @Column(nullable = false)
     ExamType examType;
 
     @Column
     String description;
 
-    @Column(unique = true, nullable = false)
+    @Column(nullable = false)
     ExamLanguage language;
 
-    @Column(unique = true, nullable = false)
+    @Column(nullable = false)
     Duration duration;
 
     @OneToMany
@@ -49,5 +49,5 @@ public class Exam {
     LocalDateTime endTime;
 
     @Column
-    LocalDateTime created;
+    LocalDateTime createdAt;
 }

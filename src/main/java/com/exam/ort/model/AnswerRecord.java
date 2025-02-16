@@ -1,4 +1,13 @@
 package com.exam.ort.model;
 
-public record AnswerRecord (Long id, String text, boolean isCorrect, QuestionRecord question) {
+
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+
+public record AnswerRecord (
+        @NotNull Long id,
+        @NotNull @NotBlank String text,
+        boolean isCorrect,
+        @NotNull QuestionRecord question
+) {
 }

@@ -1,4 +1,9 @@
 package com.exam.ort.model;
 
-public record LoginResponseRecord() {
+
+import jakarta.validation.constraints.NotNull;
+
+public record LoginResponseRecord(
+        @NotNull String token
+) {
 }

@@ -10,4 +10,6 @@ public interface QuestionService {
     List<QuestionRecord> findAll();
     QuestionRecord findById(long id);
     void deleteById(long id);
+
+    List<QuestionRecord> findAllBySectionId(Long sectionId);
 }

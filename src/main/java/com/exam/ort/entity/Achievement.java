@@ -21,18 +21,11 @@ public class Achievement {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
-    User user; // Пользователь, который получил достижение
+    User user;
 
     @Column(nullable = false)
-    String description; // Описание достижения
+    String description;
 
     @Column(nullable = false)
-    LocalDateTime awardedAt; // Время получения достижения
-
-    @PrePersist
-    public void prePersist() {
-        if (awardedAt == null) {
-            awardedAt = LocalDateTime.now(); // Устанавливаем время достижения
-        }
-    }
+    LocalDateTime awardedAt;
 }

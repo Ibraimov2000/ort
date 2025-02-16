@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 @Entity
 @Getter
 @Setter
-@Table(name = "exam_results")
+@Table(name = "exams_results")
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class ExamResult {
 
@@ -19,15 +19,17 @@ public class ExamResult {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
     User user;
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "exam_id")
     Exam exam;
 
-    @Column
+    @Column(nullable = false)
     int score;
 
-    @Column
+    @Column(nullable = false)
     LocalDateTime passedDateTime;
 }
