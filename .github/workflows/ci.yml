@@ -1,0 +1,40 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up JDK
+        uses: actions/setup-java@v2
+        with:
+          java-version: '23'
+
+      - name: Build with Maven
+        run: mvn clean install
+
+      - name: Build Docker images
+        run: |
+          docker build -t vue-app ./frontend
+          docker build -t spring-boot-app ./backend
+
+      - name: Push Docker images to DockerHub
+        run: |
+          docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
+          docker push vue-app
+          docker push spring-boot-app
+
+      - name: Deploy to Server
+        run: |
+          ssh user@server 'docker pull vue-app && docker run -d -p 8080:8080 vue-app'
+          ssh user@server 'docker pull spring-boot-app && docker run -d -p 8080:8080 spring-boot-app'
