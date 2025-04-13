@@ -66,7 +66,7 @@ if (router.currentRoute.value.query.sessionExpired) {
         <div class="col-md-5 col-xl-4 text-center text-md-start">
           <h2 class="display-6 fw-bold mb-5">
             <span class="underline pb-1">
-              <strong>Login</strong>
+              <strong>Вход</strong>
             </span>
           </h2>
           <form @submit.prevent="login">
@@ -90,27 +90,27 @@ if (router.currentRoute.value.query.sessionExpired) {
               />
             </div>
             <div class="mb-5">
-              <button class="btn btn-primary shadow" type="submit">Log in</button>
+              <button class="btn btn-primary shadow" type="submit">Войти</button>
             </div>
             <div v-if="errorMessage" class="alert alert-danger">
               {{ errorMessage }}
             </div>
             <div v-if="sessionExpired" class="alert alert-warning">
-              Your session has expired.
+              Ваша сессия истекла
               <br />
-              Please log in again.
+              Повторите еще раз
             </div>
             <p class="text-muted">
               Don't have an account?
               <router-link to="/signup">
-                Sign up
+                Зарегистрироваться
                 <img src="../assets/img/arrow-right.svg" alt="Arrow Right Icon" />
               </router-link>
             </p>
             <p class="text-muted">
-              Forgot your password?
+              Забыли пароль?
               <router-link to="/forgotten-password">
-                Yes
+                Да
                 <img src="../assets/img/arrow-right.svg" alt="Arrow Right Icon" />
               </router-link>
             </p>

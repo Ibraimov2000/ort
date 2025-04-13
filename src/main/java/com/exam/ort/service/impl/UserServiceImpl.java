@@ -8,6 +8,7 @@ import com.exam.ort.entity.User;
 import com.exam.ort.repository.TokenRepository;
 import com.exam.ort.repository.UserRepository;
 import com.exam.ort.service.UserService;
+import jakarta.transaction.Transactional;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -198,6 +199,7 @@ public class UserServiceImpl implements UserService {
         return userRepository.findUnlockedUsers();
     }
 
+    @Transactional
     @Override
     public void deleteUser(String email) {
         User user = findUserByEmail(email);

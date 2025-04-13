@@ -4,17 +4,17 @@
       <div class="row mb-2 mb-5">
         <div class="col text-center">
           <button class="btn btn-outline-secondary" @click="getLockedUsers">
-            Locked Users
+            Заблокированные
           </button>
         </div>
         <div class="col text-center">
           <button class="btn btn-outline-secondary" @click="getAllUsers">
-            All Users
+            Все
           </button>
         </div>
         <div class="col text-center">
           <button class="btn btn-outline-secondary" @click="getUnlockedUsers">
-            Unlocked Users
+            Разблокированные
           </button>
         </div>
       </div>
@@ -36,8 +36,9 @@
                 <!-- delete button -->
                 <button
                     class="btn btn-outline-danger mx-1"
-                    data-bs-toggle="modal" data-bs-target="#modal-1"
                     @click="setUserToDelete(props.row.email, props.row.originalIndex)"
+                    data-bs-toggle="modal"
+                    data-bs-target="#modal-1"
                 >
                   <svg
                       class="icon icon-tabler icon-tabler-trash fs-3"
@@ -62,10 +63,10 @@
               <!-- lock button -->
                 <button
                     class="btn btn-outline-primary mx-1"
-                    v-if=props.row.accountNonLocked
+                    v-if="props.row.accountNonLocked"
                     @click="lockUserAccount(props.row.email, props.row.originalIndex)"
                 >
-                  UNLOCKED.. Click to lock
+                  Заблокировать
                 </button>
               <!--unlock button-->
                 <button
@@ -73,25 +74,25 @@
                     v-else
                     @click="unlockUserAccount(props.row.email, props.row.originalIndex)"
                 >
-                  LOCKED.. Click to unlock
+                  Разблокировать
                 </button>
             </span>
           </template>
         </vue-good-table>
 
         <!--Start Modal-->
-        <div class="modal fade" role="dialog" tabindex="-1" id="modal-1">
+        <div v-if="isModalVisible" class="modal fade show d-block" tabindex="-1" id="modal-1">
           <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
-              <div class="modal-body" id="modal-body">
+              <div class="modal-body">
                 <div class="row d-flex justify-content-center">
-                  <h3>Are you sure about that !!</h3>
+                  <h3>Вы уверены?</h3>
                 </div>
               </div>
               <div class="modal-footer">
-                <button class="btn btn-light" type="button" data-bs-dismiss="modal">Close</button>
-                <button class="btn btn-primary" type="button" data-bs-dismiss="modal"
-                        @click="deleteUserAccount(selectedUserEmail,selectedUserIndex)">Delete
+                <button class="btn btn-light" type="button" @click="closeModal">Закрыть</button>
+                <button class="btn btn-danger" type="button" @click="deleteUserAccount(selectedUserEmail, selectedUserIndex)">
+                  Удалить
                 </button>
               </div>
             </div>
@@ -104,21 +105,22 @@
 </template>
 
 <script setup>
-import {onMounted, ref} from 'vue';
+import { onMounted, ref } from 'vue';
 import axiosInstance from "@/api/axiosInstance.js";
-import {VueGoodTable} from "vue-good-table-next";
+import { VueGoodTable } from "vue-good-table-next";
 import 'vue-good-table-next/dist/vue-good-table-next.css';
 
 const users = ref([]);
 const columns = [
-  {label: 'first name', field: 'firstName'},
-  {label: 'last name', field: 'lastName'},
-  {label: 'Email', field: 'email'},
-  {label: 'Action', field: 'action'}
+  {label: 'Имя', field: 'firstName'},
+  {label: 'Фамилия', field: 'lastName'},
+  {label: 'Логин', field: 'email'},
+  {label: 'Действия', field: 'action'}
 ];
 let selectedUserEmail = null;
 let selectedUserIndex = null;
 let errorMessage = '';
+const isModalVisible = ref(false);
 
 onMounted(() => {
   getAllUsers();
@@ -130,7 +132,6 @@ const getAllUsers = async () => {
     const response = await axiosInstance.get("admin/users");
     if (response.status === 200) {
       users.value = response.data;
-      console.log(response.data)
     } else {
       errorMessage = 'Cannot get users from the server';
       users.value = [];
@@ -177,9 +178,10 @@ const getLockedUsers = async () => {
 const deleteUserAccount = async (email, index) => {
   errorMessage = '';
   try {
-    const response = await axiosInstance.delete("admin/users", {data: {email: email}});
+    const response = await axiosInstance.delete(`admin/users/${email}`);
     if (response.status === 200) {
       users.value.splice(index, 1);
+      closeModal();
     } else {
       errorMessage = 'Cannot delete this account';
     }
@@ -187,6 +189,16 @@ const deleteUserAccount = async (email, index) => {
     errorMessage = 'Cannot delete this account';
     console.log(error);
   }
+};
+
+const setUserToDelete = (email, index) => {
+  selectedUserEmail = email;
+  selectedUserIndex = index;
+  isModalVisible.value = true;
+};
+
+const closeModal = () => {
+  isModalVisible.value = false;
 };
 
 const unlockUserAccount = async (email, index) => {
@@ -220,10 +232,4 @@ const lockUserAccount = async (email, index) => {
     console.log(error);
   }
 };
-
-const setUserToDelete = (email, index) => {
-  selectedUserEmail = email;
-  selectedUserIndex = index;
-};
-
 </script>

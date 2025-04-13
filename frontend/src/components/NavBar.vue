@@ -68,11 +68,11 @@ const logout = async () => {
       <div class="collapse navbar-collapse" id="navcol-1">
         <ul class="navbar-nav mx-auto">
           <li class="nav-item">
-            <router-link v-if="isAuthenticated" class="nav-link" to="/tests">Tests</router-link>
+            <router-link v-if="isAuthenticated" class="nav-link" to="/tests">Тесты</router-link>
           </li>
-          <li v-if="isAuthenticated" class="nav-item">
-            <router-link class="nav-link" to="/authenticated">Authenticated</router-link>
-          </li>
+<!--          <li v-if="isAuthenticated" class="nav-item">-->
+<!--            <router-link class="nav-link" to="/authenticated">Authenticated</router-link>-->
+<!--          </li>-->
           <li v-if="isAdmin" class="nav-item">
             <router-link class="nav-link" to="/admin">ADMIN</router-link>
           </li>
@@ -80,12 +80,12 @@ const logout = async () => {
             <router-link class="nav-link" to="/user">USER</router-link>
           </li>
           <li v-if="isUser" class="nav-item">
-            <router-link class="nav-link" to="/profile">Profile</router-link>
+            <router-link class="nav-link" to="/profile">Профиль</router-link>
           </li>
         </ul>
-        <router-link v-if="!isAuthenticated" class="btn btn-outline-primary" to="/login">Log in</router-link>
-        <router-link v-if="!isAuthenticated" class="btn btn-outline-secondary" to="/signup">Sign up</router-link>
-        <button v-if="isAuthenticated" class="btn btn-outline-primary" @click="logout">Log out</button>
+        <router-link v-if="!isAuthenticated" class="btn btn-outline-primary" to="/login">Войти</router-link>
+        <router-link v-if="!isAuthenticated" class="btn btn-outline-secondary" to="/signup">Зарегистрироваться</router-link>
+        <button v-if="isAuthenticated" class="btn btn-outline-primary" @click="logout">Выйти</button>
       </div>
     </div>
   </nav>

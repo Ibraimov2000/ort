@@ -49,6 +49,14 @@ const examService = {
                 console.error('Error fetching exam results:', error);
                 throw error;
             });
+    },
+
+    deleteExam(testId) {
+        return axiosInstance.delete(`/exams/${testId}`)
+            .then(response => response.data)
+            .catch(error => {
+                console.error('Error deleting exam: ', error);
+            })
     }
 };
 
