@@ -1,7 +1,9 @@
 package com.exam.ort.service.impl;
 
+import com.exam.ort.entity.Section;
 import com.exam.ort.mapper.SectionMapper;
 import com.exam.ort.model.SectionRecord;
+import com.exam.ort.model.request.SectionRequest;
 import com.exam.ort.repository.SectionRepository;
 import com.exam.ort.service.SectionService;
 import com.exam.ort.exception.ResourceNotFoundException;
@@ -12,6 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -49,9 +52,9 @@ public class SectionServiceImpl implements SectionService {
     }
 
     @Override
-    public List<SectionRecord> findAllByExamId() {
+    public List<SectionRecord> findAll() {
         log.info("Fetching all sections.");
-        return sectionRepository.findAll().stream().map(sectionMapper::toRecord).collect(Collectors.toList());
+        return sectionRepository.findAllByExamIsNull().stream().map(sectionMapper::toRecord).collect(Collectors.toList());
     }
 
     @Override
@@ -61,5 +64,13 @@ public class SectionServiceImpl implements SectionService {
             throw new ResourceNotFoundException("Section not found");
         }
         sectionRepository.deleteById(id);
+    }
+
+    @Override
+    public SectionRecord update(Long id, SectionRequest sectionRequest) {
+        Section section = sectionRepository.findById(id).orElseThrow();
+        section.setName(sectionRequest.getName());
+        section.setQuestionsCount(sectionRequest.getQuestionsCount());
+        return sectionMapper.toRecord(sectionRepository.save(section));
     }
 }

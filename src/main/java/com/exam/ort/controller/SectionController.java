@@ -1,6 +1,7 @@
 package com.exam.ort.controller;
 
 import com.exam.ort.model.SectionRecord;
+import com.exam.ort.model.request.SectionRequest;
 import com.exam.ort.service.SectionService;
 import com.exam.ort.exception.ResourceNotFoundException;
 import io.swagger.v3.oas.annotations.Operation;
@@ -25,12 +26,12 @@ public class SectionController {
 
     final SectionService sectionService;
 
-    @Operation(summary = "Get all sections", description = "Fetch all sections, with optional filter by exam ID")
+    @Operation(summary = "Get all sections", description = "Fetch all sections")
     @ApiResponse(responseCode = "200", description = "Successfully retrieved sections",
             content = @Content(mediaType = "application/json", schema = @Schema(implementation = SectionRecord.class)))
     @GetMapping
     public List<SectionRecord> getSections() {
-        return sectionService.findAllByExamId();
+        return sectionService.findAll();
     }
 
     @Operation(summary = "Get sections by exam ID", description = "Fetch all sections filtered by exam ID")
@@ -76,5 +77,10 @@ public class SectionController {
         } catch (ResourceNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<SectionRecord> updateSection(@PathVariable Long id, @RequestBody SectionRequest section) {
+        return ResponseEntity.ok(sectionService.update(id, section));
     }
 }

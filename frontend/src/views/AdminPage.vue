@@ -9,49 +9,8 @@
       </header>
 
       <UsersTable/>
-
       <ExamsTable/>
-
-      <section class="test-admin mt-5">
-        <h2>Создание теста</h2>
-        <form @submit.prevent="createTest">
-          <div class="form-group">
-            <label for="test-name">Название:</label>
-            <input id="test-name" v-model.trim="newTest.name" required placeholder="Введите название теста" />
-          </div>
-
-          <div class="form-group">
-            <label for="test-description">Описание:</label>
-            <input id="test-description" v-model.trim="newTest.description" required placeholder="Введите описание теста" />
-          </div>
-
-          <div class="form-group">
-            <label for="exam-type">Тип экзамена:</label>
-            <select id="exam-type" v-model="newTest.examType" required>
-              <option v-for="type in examTypes" :key="type.value" :value="type.value">
-                {{ type.label }}
-              </option>
-            </select>
-          </div>
-
-          <div class="form-group">
-            <label for="language">Язык:</label>
-            <select id="language" v-model="newTest.language" required>
-              <option v-for="lang in languages" :key="lang.value" :value="lang.value">
-                {{ lang.label }}
-              </option>
-            </select>
-          </div>
-
-
-          <div class="form-group">
-            <label for="duration">Продолжительность (минуты):</label>
-            <input id="duration" type="number" v-model.number="newTest.durationInMinutes" required placeholder="Укажите длительность" />
-          </div>
-
-          <button type="submit" class="submit-btn">Создать</button>
-        </form>
-      </section>
+      <SectionsTable/>
     </div>
   </section>
 </template>
@@ -62,44 +21,12 @@ import { ref, onMounted } from "vue";
 import axiosInstance from "@/api/axiosInstance.js";
 import UsersTable from "@/components/UsersTable.vue";
 import examService from "@/services/examService.js";
-import ExamsTable from "@/components/ExamsTable.vue";
-import sectionService from "@/services/sectionService.js";
+import ExamsTable from "@/components/crud/ExamsTable.vue";
+import SectionsTable from "@/components/crud/SectionsTable.vue";
 
 const message = ref("");
 const tests = ref([]);
-const newTest = ref({
-  name: "",
-  description: "",
-  examType: "MAIN",
-  language: "RU",
-  durationInMinutes: 180
-});
-const examTypes = [
-  { value: "MAIN", label: "Основной" },
-  { value: "ADDITIONAL", label: "Дополнительный" }
-];
 
-const languages = [
-  { value: "RU", label: "Русский" },
-  { value: "KG", label: "Кыргызский" }
-];
-
-
-const createTest = async () => {
-  try {
-    const response = await examService.createExam({...newTest.value});
-    tests.value.push(response.data);
-    newTest.value = {
-      name: "",
-      description: "",
-      examType: "MAIN",
-      language: "RU",
-      durationInMinutes: 180
-    };
-  } catch (error) {
-    console.error("Error creating test", error);
-  }
-};
 
 const getMessage = async () => {
   try {
@@ -116,35 +43,8 @@ const fetchTests = async () => {
   try {
     const response = await examService.getExams();
     tests.value = response || [];
-    console.log('tests:', tests.value);
   } catch (error) {
-    console.error("Error fetching tests", error);
     tests.value = [];
-  }
-};
-
-const editTest = async (test) => {
-  const updatedName = prompt("Edit Test Name", test.name);
-  const updatedSections = prompt("Edit Sections", test.sections);
-  if (updatedName && updatedSections) {
-    try {
-      await axiosInstance.put(`/tests/${test.id}`, {
-        name: updatedName,
-        sections: updatedSections,
-      });
-      await fetchTests();
-    } catch (error) {
-      console.error("Error updating test", error);
-    }
-  }
-};
-
-const deleteTest = async (id) => {
-  try {
-    await axiosInstance.delete(`/tests/${id}`);
-    tests.value = tests.value.filter((test) => test.id !== id);
-  } catch (error) {
-    console.error("Error deleting test", error);
   }
 };
 

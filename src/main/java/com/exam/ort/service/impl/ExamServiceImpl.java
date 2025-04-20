@@ -1,13 +1,16 @@
 package com.exam.ort.service.impl;
 
 import com.exam.ort.entity.Exam;
+import com.exam.ort.entity.Section;
 import com.exam.ort.enums.ExamType;
 import com.exam.ort.mapper.ExamMapper;
+import com.exam.ort.mapper.SectionMapper;
 import com.exam.ort.model.ExamRecord;
 import com.exam.ort.repository.ExamRepository;
 import com.exam.ort.repository.specification.ExamSpecification;
 import com.exam.ort.service.ExamService;
 import com.exam.ort.exception.ResourceNotFoundException;
+import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -27,6 +30,7 @@ public class ExamServiceImpl implements ExamService {
 
     final ExamRepository examRepository;
     final ExamMapper examMapper;
+    final SectionMapper sectionMapper;
 
     @Override
     public ExamRecord save(ExamRecord examRecord) {
@@ -84,6 +88,63 @@ public class ExamServiceImpl implements ExamService {
     public LocalDateTime getEndTime(Long examId) {
         Exam exam = examRepository.findById(examId).orElseThrow(() -> new RuntimeException("Test not found"));
         return exam.getEndTime();
+    }
+
+    @Override
+    @Transactional
+    public ExamRecord update(ExamRecord examRequest) {
+
+        Exam exam = examRepository.findById(examRequest.id())
+                .orElseThrow(() -> new ResourceNotFoundException("Exam not found"));
+
+        exam.setName(examRequest.name());
+        exam.setDescription(examRequest.description());
+        exam.setExamType(examRequest.examType());
+        exam.setDuration(examRequest.duration());
+        exam.setLanguage(examRequest.language());
+
+        List<Section> sections = examRequest.sections().stream()
+                .map(sectionMapper::toEntity)
+                .peek(section -> {
+                    section.setExam(exam);
+
+                    if (section.getId() == null) {
+                        section.setCreated(LocalDateTime.now());
+                    } else {
+                        section.setUpdated(LocalDateTime.now());
+                    }
+
+                    if (section.getQuestions() != null) {
+                        section.getQuestions().forEach(question -> {
+                            question.setSection(section);
+
+                            if (question.getId() == null) {
+                                question.setCreatedAt(LocalDateTime.now());
+                            } else {
+                                question.setUpdatedAt(LocalDateTime.now());
+                            }
+
+                            if (question.getAnswers() != null) {
+                                question.getAnswers().forEach(answer -> {
+                                    answer.setQuestion(question);
+
+                                    if (answer.getId() == null) {
+                                        answer.setCreatedAt(LocalDateTime.now());
+                                    } else {
+                                        answer.setUpdatedAt(LocalDateTime.now());
+                                    }
+                                });
+                            }
+                        });
+                    }
+                })
+                .toList();
+
+        exam.getSections().clear();
+        exam.getSections().addAll(sections);
+
+        Exam saved = examRepository.save(exam);
+        return examMapper.toRecord(saved);
     }
 
 }

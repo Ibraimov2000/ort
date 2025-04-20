@@ -14,4 +14,6 @@ public interface ExamService {
     void finishTest(Long examId);
 
     LocalDateTime getEndTime(Long examId);
+
+    ExamRecord update(ExamRecord exam);
 }

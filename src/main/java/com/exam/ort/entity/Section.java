@@ -23,15 +23,19 @@ public class Section {
     @Column(nullable = false)
     String name;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    Exam exam;
-
     @Column(nullable = false)
     int questionsCount;
 
-    @OneToMany
+    @OneToMany(mappedBy = "section", cascade = CascadeType.ALL, orphanRemoval = true)
     List<Question> questions;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "exam_id")
+    Exam exam;
 
     @Column
     LocalDateTime created;
+
+    @Column
+    LocalDateTime updated;
 }

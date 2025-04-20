@@ -57,6 +57,13 @@ const examService = {
             .catch(error => {
                 console.error('Error deleting exam: ', error);
             })
+    },
+    updateExam(exam) {
+        return axiosInstance.put(`/exams/update`, exam)
+            .then(response => response.data)
+            .catch(error => {
+                console.error('Error updating exam: ', error);
+            })
     }
 };
 

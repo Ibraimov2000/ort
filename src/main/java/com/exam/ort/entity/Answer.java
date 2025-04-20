@@ -22,8 +22,8 @@ public class Answer {
     @Column(nullable = false)
     String text;
 
-    @Column(nullable = false)
-    boolean isCorrect;
+    @Column(name = "is_correct", nullable = false)
+    boolean correct;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "question_id")
@@ -31,4 +31,7 @@ public class Answer {
 
     @Column
     LocalDateTime createdAt;
+
+    @Column
+    LocalDateTime updatedAt;
 }

@@ -1,106 +1,71 @@
 <template>
-  <section class="py-4 py-md-5 my-5">
-    <div class="container-md py-5">
-      <div class="row mb-2 mb-5">
-        <div class="col text-center">
-          <button class="btn btn-outline-secondary" @click="getLockedUsers">
-            Заблокированные
-          </button>
+  <section class="container my-8">
+    <el-card shadow="hover">
+      <template #header>
+        <div class="flex justify-between items-center">
+          <h2 class="text-xl font-semibold">Управление пользователями</h2>
+          <el-radio-group v-model="filter" @change="handleFilterChange">
+            <el-radio-button label="all">Все</el-radio-button>
+            <el-radio-button label="locked">Заблокированные</el-radio-button>
+            <el-radio-button label="unlocked">Разблокированные</el-radio-button>
+          </el-radio-group>
         </div>
-        <div class="col text-center">
-          <button class="btn btn-outline-secondary" @click="getAllUsers">
-            Все
-          </button>
-        </div>
-        <div class="col text-center">
-          <button class="btn btn-outline-secondary" @click="getUnlockedUsers">
-            Разблокированные
-          </button>
-        </div>
-      </div>
-      <div v-if="errorMessage" class="alert alert-danger">
-        <strong>Something went wrong!</strong>
-        {{ errorMessage }}
-      </div>
-      <div class="row">
-        <!--Users table-->
-        <vue-good-table
-            :columns="columns"
-            :rows="users"
-            :search-options="{enabled: true}"
-            :pagination-options="{enabled: true}"
-            styleClass="vgt-table striped"
-        >
-          <template v-slot:table-row="props">
-            <span v-if="props.column.field === 'action'">
-                <!-- delete button -->
-                <button
-                    class="btn btn-outline-danger mx-1"
-                    @click="setUserToDelete(props.row.email, props.row.originalIndex)"
-                    data-bs-toggle="modal"
-                    data-bs-target="#modal-1"
-                >
-                  <svg
-                      class="icon icon-tabler icon-tabler-trash fs-3"
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="1em"
-                      height="1em"
-                      viewBox="0 0 24 24"
-                      stroke-width="2"
-                      stroke="currentColor"
-                      fill="none"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                  >
-                    <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-                    <line x1="4" y1="7" x2="20" y2="7"/>
-                    <line x1="10" y1="11" x2="10" y2="17"/>
-                    <line x1="14" y1="11" x2="14" y2="17"/>
-                    <path d="M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12"/>
-                    <path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3"/>
-                  </svg>
-                </button>
-              <!-- lock button -->
-                <button
-                    class="btn btn-outline-primary mx-1"
-                    v-if="props.row.accountNonLocked"
-                    @click="lockUserAccount(props.row.email, props.row.originalIndex)"
-                >
-                  Заблокировать
-                </button>
-              <!--unlock button-->
-                <button
-                    class="btn btn-outline-primary mx-1"
-                    v-else
-                    @click="unlockUserAccount(props.row.email, props.row.originalIndex)"
-                >
-                  Разблокировать
-                </button>
-            </span>
-          </template>
-        </vue-good-table>
+      </template>
 
-        <!--Start Modal-->
-        <div v-if="isModalVisible" class="modal fade show d-block" tabindex="-1" id="modal-1">
-          <div class="modal-dialog modal-lg" role="document">
-            <div class="modal-content">
-              <div class="modal-body">
-                <div class="row d-flex justify-content-center">
-                  <h3>Вы уверены?</h3>
-                </div>
-              </div>
-              <div class="modal-footer">
-                <button class="btn btn-light" type="button" @click="closeModal">Закрыть</button>
-                <button class="btn btn-danger" type="button" @click="deleteUserAccount(selectedUserEmail, selectedUserIndex)">
-                  Удалить
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-        <!--End Modal-->
+      <div v-if="errorMessage" class="my-4">
+        <el-alert type="error" show-icon :closable="false" :title="'Ошибка'" :description="errorMessage" />
       </div>
-    </div>
+
+      <vue-good-table
+          :columns="columns"
+          :rows="users"
+          :search-options="{ enabled: true }"
+          :pagination-options="{ enabled: true }"
+          style-class="vgt-table striped"
+      >
+        <template v-slot:table-row="props">
+          <template v-if="props.column.field === 'status'">
+            <el-tag :type="props.row.accountNonLocked ? 'success' : 'danger'">
+              {{ props.row.accountNonLocked ? 'Активен' : 'Заблокирован' }}
+            </el-tag>
+          </template>
+
+          <template v-if="props.column.field === 'action'">
+            <el-button
+                size="small"
+                type="danger"
+                class="me-2"
+                @click="setUserToDelete(props.row.email, props.row.originalIndex)"
+            >Удалить</el-button>
+
+            <el-button
+                size="small"
+                type="primary"
+                class="me-2"
+                v-if="props.row.accountNonLocked"
+                @click="lockUserAccount(props.row.email, props.row.originalIndex)"
+            >Заблокировать</el-button>
+
+            <el-button
+                size="small"
+                type="success"
+                v-else
+                @click="unlockUserAccount(props.row.email, props.row.originalIndex)"
+            >Разблокировать</el-button>
+          </template>
+        </template>
+      </vue-good-table>
+    </el-card>
+
+    <el-dialog v-model="isModalVisible" title="Удаление пользователя" width="500px">
+      <div class="text-center my-4">
+        <h3>Вы уверены, что хотите удалить пользователя?</h3>
+      </div>
+      <template #footer>
+        <el-button @click="closeModal">Отмена</el-button>
+        <el-button type="danger" @click="deleteUserAccount(selectedUserEmail, selectedUserIndex)">Удалить</el-button>
+      </template>
+    </el-dialog>
   </section>
 </template>
 
@@ -111,12 +76,15 @@ import { VueGoodTable } from "vue-good-table-next";
 import 'vue-good-table-next/dist/vue-good-table-next.css';
 
 const users = ref([]);
+const filter = ref("all");
 const columns = [
-  {label: 'Имя', field: 'firstName'},
-  {label: 'Фамилия', field: 'lastName'},
-  {label: 'Логин', field: 'email'},
-  {label: 'Действия', field: 'action'}
+  { label: 'Имя', field: 'firstName' },
+  { label: 'Фамилия', field: 'lastName' },
+  { label: 'Логин', field: 'email' },
+  { label: 'Статус', field: 'status' },
+  { label: 'Действия', field: 'action' }
 ];
+
 let selectedUserEmail = null;
 let selectedUserIndex = null;
 let errorMessage = '';
@@ -126,18 +94,19 @@ onMounted(() => {
   getAllUsers();
 });
 
+function handleFilterChange(val) {
+  if (val === 'all') getAllUsers();
+  if (val === 'locked') getLockedUsers();
+  if (val === 'unlocked') getUnlockedUsers();
+}
+
 const getAllUsers = async () => {
   errorMessage = '';
   try {
     const response = await axiosInstance.get("admin/users");
-    if (response.status === 200) {
-      users.value = response.data;
-    } else {
-      errorMessage = 'Cannot get users from the server';
-      users.value = [];
-    }
-  } catch (error) {
-    errorMessage = 'Cannot get users from the server';
+    users.value = response.status === 200 ? response.data : [];
+  } catch {
+    errorMessage = 'Не удалось загрузить пользователей';
     users.value = [];
   }
 };
@@ -146,16 +115,10 @@ const getUnlockedUsers = async () => {
   errorMessage = '';
   try {
     const response = await axiosInstance.get("admin/unlocked-users");
-    if (response.status === 200) {
-      console.log(response.data);
-      users.value = response.data;
-    } else {
-      console.log(response);
-      users.value = [];
-    }
-  } catch (error) {
+    users.value = response.status === 200 ? response.data : [];
+  } catch {
+    errorMessage = 'Не удалось загрузить пользователей';
     users.value = [];
-    errorMessage = 'Cannot get users from the server';
   }
 };
 
@@ -163,15 +126,10 @@ const getLockedUsers = async () => {
   errorMessage = '';
   try {
     const response = await axiosInstance.get("admin/locked-users");
-    if (response.status === 200) {
-      users.value = response.data;
-    } else {
-      errorMessage = 'Cannot get users from the server';
-      users.value = [];
-    }
-  } catch (error) {
+    users.value = response.status === 200 ? response.data : [];
+  } catch {
+    errorMessage = 'Не удалось загрузить пользователей';
     users.value = [];
-    errorMessage = 'Cannot get users from the server';
   }
 };
 
@@ -183,10 +141,10 @@ const deleteUserAccount = async (email, index) => {
       users.value.splice(index, 1);
       closeModal();
     } else {
-      errorMessage = 'Cannot delete this account';
+      errorMessage = 'Не удалось удалить пользователя';
     }
   } catch (error) {
-    errorMessage = 'Cannot delete this account';
+    errorMessage = 'Не удалось удалить пользователя';
     console.log(error);
   }
 };
@@ -204,15 +162,14 @@ const closeModal = () => {
 const unlockUserAccount = async (email, index) => {
   errorMessage = '';
   try {
-    const url = `admin/unlock-user/${email}`;
-    const response = await axiosInstance.post(url);
+    const response = await axiosInstance.post(`admin/unlock-user/${email}`);
     if (response.status === 200) {
       users.value.splice(index, 1);
     } else {
-      errorMessage = 'Cannot unlock this account';
+      errorMessage = 'Не удалось разблокировать пользователя';
     }
   } catch (error) {
-    errorMessage = 'Cannot unlock this account';
+    errorMessage = 'Не удалось разблокировать пользователя';
     console.log(error);
   }
 };
@@ -220,15 +177,14 @@ const unlockUserAccount = async (email, index) => {
 const lockUserAccount = async (email, index) => {
   errorMessage = '';
   try {
-    const url = `admin/lock-user/${email}`;
-    const response = await axiosInstance.post(url);
+    const response = await axiosInstance.post(`admin/lock-user/${email}`);
     if (response.status === 200) {
       users.value.splice(index, 1);
     } else {
-      errorMessage = 'Cannot lock this account';
+      errorMessage = 'Не удалось заблокировать пользователя';
     }
   } catch (error) {
-    errorMessage = 'Cannot lock this account';
+    errorMessage = 'Не удалось заблокировать пользователя';
     console.log(error);
   }
 };

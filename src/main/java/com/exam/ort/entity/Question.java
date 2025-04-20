@@ -19,12 +19,15 @@ public class Question {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    Long id;
+
+    @Column(nullable = false)
+    int number;
 
     @Column(nullable = false)
     String text;
 
-    @OneToMany(mappedBy = "question")
+    @OneToMany(mappedBy = "question", cascade = CascadeType.ALL, orphanRemoval = true)
     List<Answer> answers;
 
     @Column(nullable = false)
@@ -37,6 +40,13 @@ public class Question {
     @Enumerated(EnumType.STRING)
     QuestionType questionType;
 
+    @Lob
+    @Column(name = "image_data")
+    byte[] imageData;
+
     @Column
     LocalDateTime createdAt;
+
+    @Column
+    LocalDateTime updatedAt;
 }

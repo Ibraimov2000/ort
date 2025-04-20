@@ -95,4 +95,9 @@ public class ExamController {
         response.put("endTime", endTime.toString());
         return ResponseEntity.ok(response);
     }
+
+    @PutMapping("/update")
+    public ResponseEntity<ExamRecord> updateExam(@RequestBody ExamRecord exam) {
+        return ResponseEntity.ok(examService.update(exam));
+    }
 }

@@ -13,5 +13,7 @@ public interface SectionRepository extends JpaRepository<Section, Long> {
 
     @Query("SELECT s FROM Section s WHERE s.exam.id = :examId")
     List<Section> findAllByExamId(@Param("examId") long examId);
+
+    List<Section> findAllByExamIsNull();
 }
 

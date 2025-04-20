@@ -41,7 +41,7 @@ public class Exam {
     @Column(nullable = false)
     Duration duration;
 
-    @OneToMany
+    @OneToMany(mappedBy = "exam", cascade = CascadeType.ALL, orphanRemoval = true)
     List<Section> sections;
 
     @Column
